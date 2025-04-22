@@ -50,7 +50,6 @@
 
         <!-- Main Content-->
         <div class="container px-4 px-lg-5" id="content">
-            <button id="createPostButton" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createPostModal">Create Post</button>
             <div class="row gx-4 gx-lg-5 justify-content-center">
                 <div class="col-md-10 col-lg-8 col-xl-7">
                     <!-- Post preview-->

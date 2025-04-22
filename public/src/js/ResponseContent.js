@@ -1,4 +1,3 @@
-import PageItem from './PageItem.js';
 import ResponseRow from './ResponseRow.js';
 
 console.log('ResponseContent.js loaded');
@@ -18,12 +17,10 @@ export default class ResponseContent {
     // }
 
     setContent(result) {
-        console.log('setContent');
         // this.cleanContent(this.content);
 
         // this.currentPage = result.songs.current_page;
 
-        <button id="createPostButton" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createPostModal">Create Post</button>
         const buttonCreate = document.getElementById('createPostButton');
         buttonCreate.setAttribute('data-bs-toggle', 'modal');
         buttonCreate.setAttribute('data-bs-target', '#createPostModal');

@@ -8,7 +8,6 @@ export default class ModalEvents {
         this.csrf = csrf;
 
         this.content = document.getElementById('content');
-        console.log(this.content)
         this.responseContent = new ResponseContent(this.content);
 
         this.fetchUrl = '';
@@ -84,7 +83,6 @@ export default class ModalEvents {
     }
 
     responseCommonContent(data) {
-        console.log('responseCommonContent');
         this.responseContent.setContent(data);
         let link = document.getElementById('logoutLink');
         if(link) {
@@ -150,14 +148,13 @@ export default class ModalEvents {
     }
 
     init() {
-        // this.httpClient.get(
-        //     '/post',
-        //     {},
-        //     (data) => {
-        //         this.responseCommonContent(data);
-        //     }
-        // );
-        this.responseCommonContent("x");
-
+        this.httpClient.get(
+            '/post',
+            {},
+            (data) => {
+                this.responseCommonContent(data);
+            }
+        );
+        // this.responseCommonContent("x");
     }
 }
