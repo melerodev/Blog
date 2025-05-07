@@ -12,6 +12,7 @@
         <!-- Google fonts-->
         <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css" />
+    
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="{{ url('/css/styles.css') }}" rel="stylesheet" />
         <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -118,5 +119,13 @@
         <!-- Core theme JS-->
         {{-- <script src="{{ url('src/js/scripts_bootstrap.js') }}"></script> --}}
         <script src="{{ url('src/js/script.js')}}" type="module"></script>
+        <script src="https://cdn.tiny.cloud/1/id7y97kpsbh1lbyyug47zu3zjekwybls6bt0p55r6jyoqa4m/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+        <script>
+            tinymce.init({
+                selector: '#mytextarea',  // Selecciona el textarea donde se inicializa el editor
+                plugins: 'lists link image', // Agrega plugins como listas, enlace e imagen
+                toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | bullist numlist | link image', // Barra de herramientas
+            });
+        </script>
     </body>
 </html>

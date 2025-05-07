@@ -8,4 +8,3 @@ Route::get('/', function () {
 })->name('home');
 
 Route::resource('post', controller: ArticuloController::class)->except(['create', 'edit', 'destroy']);
-Route::get('/create', [ArticuloController::class, 'articulo'])->name(name: 'create');

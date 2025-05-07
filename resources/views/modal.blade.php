@@ -1,6 +1,5 @@
 <!-- Modal Create Post -->
-<div class="modal fade" id="createPostModal" tabindex="-1" aria-labelledby="createPostModalLabel"
-    aria-hidden="true">
+<div class="modal fade" id="createPostModal" tabindex="-1" aria-labelledby="createPostModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -10,13 +9,17 @@
             <div class="modal-body">
                 <form action="#" method="POST">
                     <div class="mb-3">
-                        <label for="modalPostTitle" class="form-label">Post Title</label>
-                        <input type="text" class="form-control" id="modalPostTitle" name="title" required>
+                        <label for="post-title" class="form-label">Post Title</label>
+                        <input type="text" class="form-control" id="post-title" name="title" required>
                     </div>
                     <div class="mb-3">
-                        <label for="modalPostContent" class="form-label">Post Content</label>
-                        <textarea id="modalPostContent" name="content"></textarea>
+                        <label for="post-content" class="form-label">Post Content</label>
+                        <textarea id="mytextarea" name="content"></textarea>
                     </div>
+                    <!-- Botón para abrir el modal -->
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createPostModal">
+                        Open Modal
+                    </button>
                 </form>
             </div>
             <div class="modal-footer">
