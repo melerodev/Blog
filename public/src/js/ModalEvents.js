@@ -155,6 +155,5 @@ export default class ModalEvents {
                 this.responseCommonContent(data);
             }
         );
-        // this.responseCommonContent("x");
     }
 }

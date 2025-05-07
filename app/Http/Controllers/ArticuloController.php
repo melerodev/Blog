@@ -8,8 +8,7 @@ use Illuminate\Http\Request;
 class ArticuloController extends Controller {
     public function index()
     {
-        $articulos = Articulo::all();
-        return response()->json(['articulos' => $articulos, 'result' => true]);
+        return response()->json(['articulos' => Articulo::all(), 'result' => true]);
     }
     public function articulo()
     {
