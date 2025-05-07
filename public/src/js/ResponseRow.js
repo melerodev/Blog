@@ -10,7 +10,6 @@ export default class ResponseRow {
     }
 
     add({ id, title, content, user, created_at }) {
-        console.log(this.parent)
         // Crear el contenedor principal para el post
         const postPreview = document.createElement('div');
         postPreview.classList.add('post-preview');
@@ -40,6 +39,30 @@ export default class ResponseRow {
         const postMeta = document.createElement('p');
         postMeta.classList.add('post-meta');
 
+        // <button class="btn btn-danger btn-sm mt-2" onclick="deletePost()">Delete</button>
+        const deleteButton = document.createElement('button');
+        deleteButton.classList.add('btn', 'btn-danger', 'btn-sm', 'mt-2');
+        deleteButton.dataset.id = id;
+        deleteButton.dataset.title = title;
+        deleteButton.dataset.url = "/post/" + id;
+        deleteButton.dataset.method = "delete";
+        deleteButton.textContent = 'Delete';
+
+        deleteButton.addEventListener('click', () => {
+            if (confirm(`¿Estás seguro de que deseas eliminar el post "${title}"?`)) {
+                this.httpClient.delete(`/post/${id}`, {}, (response) => {
+                    console.log(response);
+                    if (response.result) {
+                        // Eliminar el post del DOM
+                        postPreview.remove();
+                        alert(response.message);
+                    } else {
+                        alert(response.message);
+                    }
+                });
+            }
+        });
+
         // Formatear fecha
         const postDate = new Date(created_at);
         const formattedDate = new Intl.DateTimeFormat('es-ES', {
@@ -63,6 +86,7 @@ export default class ResponseRow {
         postMeta.appendChild(hr);
 
         // Ensamblar todo el elemento del post
+        postPreview.appendChild(deleteButton);
         postPreview.appendChild(postLink);
         postPreview.appendChild(postMeta);
 

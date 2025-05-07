@@ -12,6 +12,8 @@ class Articulo extends Model
         return $this->hasMany(Imagen::class, 'articulo');
     }
 
+    // metodo 
+
     public function comentarios() {
         return $this->hasMany(Comentario::class, 'articulo');
     }

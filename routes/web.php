@@ -7,4 +7,4 @@ Route::get('/', function () {
     return view('home');
 })->name('home');
 
-Route::resource('post', controller: ArticuloController::class)->except(['create', 'edit', 'destroy']);
+Route::resource('post', controller: ArticuloController::class);
