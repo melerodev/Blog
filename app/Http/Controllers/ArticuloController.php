@@ -15,20 +15,28 @@ class ArticuloController extends Controller {
         return view('create');
     }
 
-    public function create(Request $request)
+    public function store(Request $request)
     {
         try {
-            $articulo = Articulo::create($request->all());
+            $validated = $request->validate([
+                'titulo' => 'required|string|max:255',
+                'contenido' => 'required|string',
+                'user' => 'required|integer',
+            ]);
+
+            $articulo = Articulo::create($validated);
+
             return response()->json([
-                'articulo' => $articulo,
                 'result' => true,
-                'message' => 'Artículo creado correctamente'
-            ], 201);
+                'message' => 'Post creado exitosamente',
+                'articulo' => $articulo,
+                'articulos' => Articulo::all(), // Devolver la lista actualizada
+            ]);
         } catch (\Exception $e) {
             return response()->json([
                 'result' => false,
-                'message' => 'Error al crear el artículo: ' . $e->getMessage()
-            ], 400);
+                'message' => 'Error al crear el post: ' . $e->getMessage(),
+            ], 422);
         }
     }
 

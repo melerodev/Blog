@@ -15,30 +15,34 @@ export default class ModalEvents {
 
         this.buttomCreatePost = document.getElementById('createPostButton');
         this.modalCreatePost = document.getElementById('createPostModal');
-        this.modalCreatePostButton = document.getElementById('modalCreatePostButton');
         this.modalCreatePostTitle = document.getElementById('post-title');
         this.modalCreatePostContent = document.getElementById('mytextarea');
-
-        // this.modalDelete = document.getElementById('deleteModal');
-        // this.modalDeleteButton = document.getElementById('modalDeleteButton');
-        // this.deleteName = document.getElementById('deleteName');
-
-        // this.modalEdit = document.getElementById('editPostModal');
-        // this.modalEditButton = document.getElementById('modalEditPostButton');
-        // this.editTitle = document.getElementById('modalEditPostTitle');
-        // this.editContent = document.getElementById('modalEditPostContent');
-
-        // this.productError = document.getElementById('productError');
-        // this.productSuccess = document.getElementById('successAlert'); // Ajuste del ID para coincidir con el archivo Blade
-
+        this.modalCreatePostButton = document.getElementById('modalCreatePostButton');
         this.assignEvents();
     }
 
     assignEvents() {
-        this.buttomCreatePost.addEventListener('click', event => {            
+        this.buttomCreatePost.addEventListener('click', event => {
             this.fetchUrl = this.modalCreatePost.dataset.url;
             this.modalCreatePostTitle.value = '';
             this.modalCreatePostContent.value = '';
+        });
+
+        this.modalCreatePostButton.addEventListener('click', event => {
+            const formData = new FormData();
+            
+            // Usar la API de TinyMCE para obtener el contenido del editor
+            const contenido = tinymce.get('mytextarea') ? tinymce.get('mytextarea').getContent() : '';
+            
+            formData.append('titulo', this.modalCreatePostTitle.value);
+            formData.append('contenido', contenido);
+            formData.append('user', 1); // Cambiado de "Alejandro" a 1 (entero)
+
+            this.httpClient.postFormData(
+                this.fetchUrl,
+                formData,
+                data => this.responseCreate(data)
+            );
         });
 
         // Listener para mostrar el modal de eliminación
@@ -86,24 +90,25 @@ export default class ModalEvents {
     responseCreate(data) {
         console.log('responseCreate', data);
         if (data.result) {
-            this.productSuccess.style.display = 'block';
-            bootstrap.Modal.getInstance(this.modalCreatePost).hide();
+            alert(data.message);
+
+            // Cerrar el modal después de crear el post
+            const modal = bootstrap.Modal.getInstance(this.modalCreatePost);
+            if (modal) {
+                modal.hide();
+            }
+
             // Actualiza el contenido con los nuevos datos
             this.responseCommonContent(data);
-            setTimeout(() => {
-                this.productSuccess.style.display = 'none';
-            }, 4000);
         } else {
-            document.getElementById('modalCreateWarning').style.display = 'block';
-            console.log('Error en la creación del post');
+            alert("Error al crear el post: " + (data.message || "Error desconocido"));
         }
     }
 
     responseDelete(data) {
         console.log('responseDelete', data);
         if (data.result) {
-            this.productSuccess.style.display = 'block';
-            bootstrap.Modal.getInstance(this.modalDelete).hide();
+            alert(data.message);
             this.responseCommonContent(data);
             setTimeout(() => {
                 this.productSuccess.style.display = 'none';
