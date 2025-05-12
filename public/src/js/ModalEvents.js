@@ -13,11 +13,11 @@ export default class ModalEvents {
         this.fetchUrl = '';
         this.httpClient = new HttpClient(this.url, this.csrf);
 
-        this.buttomCreatePost = document.getElementById('buttonCreatePost');
+        this.buttomCreatePost = document.getElementById('createPostButton');
         this.modalCreatePost = document.getElementById('createPostModal');
         this.modalCreatePostButton = document.getElementById('modalCreatePostButton');
-        this.createTitle = document.getElementById('modalPostTitle');
-        this.createContent = document.getElementById('modalPostContent');
+        this.modalCreatePostTitle = document.getElementById('post-title');
+        this.modalCreatePostContent = document.getElementById('mytextarea');
 
         // this.modalDelete = document.getElementById('deleteModal');
         // this.modalDeleteButton = document.getElementById('modalDeleteButton');
@@ -35,30 +35,17 @@ export default class ModalEvents {
     }
 
     assignEvents() {
-        // this.buttomCreatePost.addEventListener('show.bs.modal', event => {
-        //     console.log('show.bs.modal');
-        //     // document.getElementById('modalCreateWarning').style.display = 'none';
-        //     this.fetchUrl = event.relatedTarget.dataset.url;
-        //     this.createTitle.value = '';
-        //     this.createContent.value = '';
-        // });
+        this.buttomCreatePost.addEventListener('click', event => {            
+            this.fetchUrl = this.modalCreatePost.dataset.url;
+            this.modalCreatePostTitle.value = '';
+            this.modalCreatePostContent.value = '';
+        });
 
         // Listener para mostrar el modal de eliminación
         // this.modalDelete.addEventListener('show.bs.modal', event => {
         //     document.getElementById('modalDeleteWarning').style.display = 'none';
         //     this.fetchUrl = event.relatedTarget.dataset.url;
         //     this.deleteName.textContent = event.relatedTarget.dataset.name;
-        // });
-
-        // // Listener para el botón de eliminación
-        // this.modalDeleteButton.addEventListener('click', event => {
-        //     this.httpClient.delete(
-        //         this.fetchUrl,
-        //         {
-        //             page: this.responseContent.currentPage
-        //         },
-        //         data => this.responseDelete(data)
-        //     );
         // });
 
         // // Listener para el botón de edición
@@ -85,7 +72,7 @@ export default class ModalEvents {
     responseCommonContent(data) {
         this.responseContent.setContent(data);
         let link = document.getElementById('logoutLink');
-        if(link) {
+        if (link) {
             link.addEventListener('click', event => {
                 this.httpClient.post(
                     link.dataset.url,
@@ -98,13 +85,13 @@ export default class ModalEvents {
 
     responseCreate(data) {
         console.log('responseCreate', data);
-        if(data.result) {
+        if (data.result) {
             this.productSuccess.style.display = 'block';
             bootstrap.Modal.getInstance(this.modalCreatePost).hide();
             // Actualiza el contenido con los nuevos datos
             this.responseCommonContent(data);
             setTimeout(() => {
-                this.productSuccess.style.display= 'none';
+                this.productSuccess.style.display = 'none';
             }, 4000);
         } else {
             document.getElementById('modalCreateWarning').style.display = 'block';
@@ -114,12 +101,12 @@ export default class ModalEvents {
 
     responseDelete(data) {
         console.log('responseDelete', data);
-        if(data.result) {
+        if (data.result) {
             this.productSuccess.style.display = 'block';
             bootstrap.Modal.getInstance(this.modalDelete).hide();
             this.responseCommonContent(data);
             setTimeout(() => {
-                this.productSuccess.style.display= 'none';
+                this.productSuccess.style.display = 'none';
             }, 4000);
         } else {
             document.getElementById('modalDeleteWarning').style.display = 'block';
@@ -128,12 +115,12 @@ export default class ModalEvents {
     }
 
     responseEdit(data) {
-        if(data.result) {
+        if (data.result) {
             this.productSuccess.style.display = 'block';
             bootstrap.Modal.getInstance(this.modalEdit).hide();
             this.responseCommonContent(data);
             setTimeout(() => {
-                this.productSuccess.style.display= 'none';
+                this.productSuccess.style.display = 'none';
             }, 4000);
         } else {
             document.getElementById('modalEditWarning').style.display = 'block';
@@ -142,7 +129,7 @@ export default class ModalEvents {
     }
 
     responseShow(data) {
-        const {titulo, contenido} = data.post;
+        const { titulo, contenido } = data.post;
         this.titulo.value = titulo;
         this.contenido.value = contenido;
     }

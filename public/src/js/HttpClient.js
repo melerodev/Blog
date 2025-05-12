@@ -1,5 +1,4 @@
 export default class HttpClient {
-
     constructor(baseUrl = '', csrfToken = '') {
         this.baseUrl = baseUrl;
         this.csrfToken = csrfToken;

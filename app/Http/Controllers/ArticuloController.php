@@ -43,26 +43,7 @@ class ArticuloController extends Controller {
         try {
             $articulo = Articulo::find($id);
 
-            if (!$articulo) {
-                return response()->json([
-                    'message' => 'Error: El artículo no existe',
-                    'result' => false
-                ]);
-            }
-
-            $title = $articulo->titulo;
             $articulo->delete();
-
-            $check = Articulo::find($id);
-
-            if ($check) {
-                return response()->json([
-                    'message' => 'Error: El artículo aparentemente se eliminó pero aún existe',
-                    'result' => false,
-                    'id' => $id,
-                    'title' => $title
-                ]);
-            }
 
             return response()->json([
                 'message' => 'Artículo eliminado correctamente',
