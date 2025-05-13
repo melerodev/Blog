@@ -54,8 +54,8 @@
                 <div class="col-md-10 col-lg-8 col-xl-7">
                     <div class="site-heading">
                         <h1>Blog with fetch</h1>
-                        <span class="subheading">This blog is create with laravel but he doesn't work with the API of
-                            laravel, he just fetch to the database and build the nodes with JS</span>
+                        <span class="subheading">This blog is create with laravel but it doesn't works with the API of
+                            Laravel, it just fetch to the database and build and delete this ones the nodes with JS</span>
                     </div>
                 </div>
             </div>
@@ -64,7 +64,7 @@
 
     <!-- Main Content-->
     <div class="container px-4 px-lg-5">
-        <div class="row gx-4 gx-lg-5 justify-content-center"';'>
+        <div class="row gx-4 gx-lg-5 justify-content-center">
             <div class="col-md-10 col-lg-8 col-xl-7" id="content">
                 {{-- <!-- Post preview-->
                 <div class="post-preview">

@@ -53,11 +53,7 @@ class ArticuloController extends Controller {
 
             $articulo->delete();
 
-            return response()->json([
-                'message' => 'Artículo eliminado correctamente',
-                'result' => true,
-                'id' => $id
-            ]);
+            return response()->json(['articulos' => Articulo::all(), 'result' => true]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Error al eliminar el artículo: ' . $e->getMessage(),

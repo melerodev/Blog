@@ -6,14 +6,14 @@ export default class ResponseContent {
         this.responseRow = new ResponseRow(this.content, null, document.querySelector('meta[name="url-base"]')['content'], document.querySelector('meta[name="csrf-token"]')['content']);
     }
 
-    // cleanContent(element) {
-    //     while (element.firstChild) {
-    //         element.removeChild(element.firstChild);
-    //     }
-    // }
+    cleanContent(element) {
+        while (element.firstChild) {
+            element.removeChild(element.firstChild);
+        }
+    }
 
     setContent(result) {
-        // this.cleanContent(this.content);
+        this.cleanContent(this.content);
         console.log(result.articulos);
 
         // result.articulos.links.forEach(link => {

@@ -13,16 +13,35 @@ export default class ModalEvents {
         this.fetchUrl = '';
         this.httpClient = new HttpClient(this.url, this.csrf);
 
-        this.buttomCreatePost = document.getElementById('createPostButton');
+        // Create post modal
         this.modalCreatePost = document.getElementById('createPostModal');
         this.modalCreatePostTitle = document.getElementById('post-title');
         this.modalCreatePostContent = document.getElementById('mytextarea');
         this.modalCreatePostButton = document.getElementById('modalCreatePostButton');
+
+        // Delete post modal
+        this.modalDeletePost = document.getElementById('deletePostModal');
+        this.modalDeletePostButton = document.getElementById('modalDeletePostButton');
+
+        // Warning post modal
+        this.modalWarningPost = document.getElementById('warningPostModal');
+        this.modalWarningPostContent = document.querySelector('#warningPostModal .modal-body p');
+
+        // View post modal
+        this.modalViewPost = document.getElementById('viewPostModal');
+        this.modalViewPostTitle = document.getElementById('post-title-view');
+        this.modalViewPostContent = document.getElementById('post-content-view');
         this.assignEvents();
+
+        // Modal post edit
+        this.modalEditPost = document.getElementById('editPostModal');
+        this.modalEditPostTitle = document.getElementById('post-title-edit');
+        this.modalEditPostContent = document.getElementById('mytextarea-edit');
+        this.modalEditPostButton = document.getElementById('modalEditPostButton');
     }
 
     assignEvents() {
-        this.buttomCreatePost.addEventListener('click', event => {
+        this.modalCreatePost.addEventListener('show.bs.modal', event => {
             this.fetchUrl = this.modalCreatePost.dataset.url;
             this.modalCreatePostTitle.value = '';
             this.modalCreatePostContent.value = '';
@@ -36,7 +55,7 @@ export default class ModalEvents {
             
             formData.append('titulo', this.modalCreatePostTitle.value);
             formData.append('contenido', contenido);
-            formData.append('user', 1); // Cambiado de "Alejandro" a 1 (entero)
+            formData.append('user', 1);
 
             this.httpClient.postFormData(
                 this.fetchUrl,
@@ -46,26 +65,24 @@ export default class ModalEvents {
         });
 
         // Listener para mostrar el modal de eliminación
-        // this.modalDelete.addEventListener('show.bs.modal', event => {
-        //     document.getElementById('modalDeleteWarning').style.display = 'none';
-        //     this.fetchUrl = event.relatedTarget.dataset.url;
-        //     this.deleteName.textContent = event.relatedTarget.dataset.name;
-        // });
+        this.modalDeletePost.addEventListener('show.bs.modal', event => {
+            // Obtener información del botón que abrió el modal
+            const button = event.relatedTarget;
+            this.fetchUrl = button.dataset.url;
+            
+            // Mostrar el título del post en el modal para confirmar
+            const modalBody = this.modalDeletePost.querySelector('.modal-body');
+            modalBody.innerHTML = `<p>¿Estás seguro que deseas eliminar el post "<strong>${button.dataset.title}</strong>"?</p>`;
+        });
 
-        // // Listener para el botón de edición
-        // this.modalEditButton.addEventListener('click', event => {
-        //     const formData = {
-        //         title: this.editTitle.value,
-        //         content: this.editContent ? this.editContent.getContent() : '',
-        //         page: this.responseContent.currentPage
-        //     };
-
-        //     this.httpClient.put(
-        //         this.fetchUrl,
-        //         formData,
-        //         data => this.responseEdit(data)
-        //     );
-        // });
+        // Listener para el botón de confirmación de eliminación
+        this.modalDeletePostButton.addEventListener('click', () => {
+            this.httpClient.delete(
+                this.fetchUrl,
+                {},
+                data => this.responseDelete(data)
+            );
+        });
     }
 
     formattedDate(date) {
@@ -108,14 +125,18 @@ export default class ModalEvents {
     responseDelete(data) {
         console.log('responseDelete', data);
         if (data.result) {
+            // Cerrar el modal después de eliminar el post
+            const modal = bootstrap.Modal.getInstance(this.modalDeletePost);
+            if (modal) {
+                modal.hide();
+            }
+            
             alert(data.message);
             this.responseCommonContent(data);
-            setTimeout(() => {
-                this.productSuccess.style.display = 'none';
-            }, 4000);
         } else {
-            document.getElementById('modalDeleteWarning').style.display = 'block';
-            console.log('Error en la eliminación del post');
+            // Mostrar mensaje de error dentro del modal
+            const modalBody = this.modalDeletePost.querySelector('.modal-body');
+            modalBody.innerHTML += `<div class="alert alert-danger mt-3">Error: ${data.message || 'No se pudo eliminar el post'}</div>`;
         }
     }
 

@@ -39,29 +39,16 @@ export default class ResponseRow {
         const postMeta = document.createElement('p');
         postMeta.classList.add('post-meta');
 
-        // <button class="btn btn-danger btn-sm mt-2" onclick="deletePost()">Delete</button>
+        // Crear botón de eliminar que abrirá el modal
         const deleteButton = document.createElement('button');
         deleteButton.classList.add('btn', 'btn-danger', 'btn-sm', 'mt-2');
+        deleteButton.dataset.bsToggle = 'modal';
+        deleteButton.dataset.bsTarget = '#deletePostModal';
         deleteButton.dataset.id = id;
         deleteButton.dataset.title = title;
         deleteButton.dataset.url = "/post/" + id;
         deleteButton.dataset.method = "delete";
         deleteButton.textContent = 'Delete';
-
-        deleteButton.addEventListener('click', () => {
-            if (confirm(`¿Estás seguro de que deseas eliminar el post "${title}"?`)) {
-                this.httpClient.delete(`/post/${id}`, {}, (response) => {
-                    console.log(response);
-                    if (response.result) {
-                        // Eliminar el post del DOM
-                        postPreview.remove();
-                        alert(response.message);
-                    } else {
-                        alert(response.message);
-                    }
-                });
-            }
-        });
 
         // Formatear fecha
         const postDate = new Date(created_at);
