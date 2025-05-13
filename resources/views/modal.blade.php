@@ -46,29 +46,29 @@
 </div>
 
 <!-- Modal Edit Post -->
-<div data-url="/post" data-method="edit" class="modal fade" id="editPostModal" tabindex="-1" aria-labelledby="editPostModalLabel" aria-hidden="true">
+<div data-url="/post" data-method="update" class="modal fade" id="editPostModal" tabindex="-1" aria-labelledby="createPostModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editPostModalLabel">Edit Post</h5>
+                <h5 class="modal-title" id="createPostModalLabel">Create New Post</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form action="#" method="POST">
-                    <input type="hidden" id="post-id" name="id">
                     <div class="mb-3">
                         <label for="post-title-edit" class="form-label">Post Title</label>
                         <input type="text" class="form-control" id="post-title-edit" name="titulo" required>
+                        <input type="hidden" id="post-id" name="id">
                     </div>
                     <div class="mb-3">
-                        <label for="post-content-edit" class="form-label">Post Content</label>
+                        <label for="post-content" class="form-label">Post Content</label>
                         <textarea id="mytextarea-edit" name="contenido"></textarea>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" id="modalEditPostButton" class="btn btn-primary">Update</button>
+                <button type="submit" id="modalEditPostButton" class="btn btn-primary">Publish</button>
             </div>
         </div>
     </div>
@@ -107,6 +107,26 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Success Post -->
+<div class="modal fade" id="successPostModal" tabindex="-1" aria-labelledby="successPostModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successPostModalLabel">Operación exitosa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-success">
+                    <p id="success-message"></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>

@@ -39,6 +39,10 @@ export default class HttpClient {
         this.request(url, 'DELETE', parameters, {}, callBack);
     }
 
+    update(url, parameters = {}, callBack) {
+        this.request(url, 'PATCH', parameters, {}, callBack);
+    }
+
     get(url, parameters = {}, callBack) {
         this.request(url, 'GET', parameters, {}, callBack);
     }
@@ -73,6 +77,31 @@ export default class HttpClient {
 
     put(url, parameters = {}, callBack) {
         this.request(url, 'PUT', parameters, {}, callBack);
+    }
+    
+    putFormData(url, formData, callBack) {
+        const fullUrl = this.baseUrl + url;
+        formData.append('_method', 'PUT');
+        
+        const options = {
+            method: 'POST',
+            headers: {
+                'X-CSRF-Token': this.csrfToken,
+                'Accept': 'application/json'
+            },
+            body: formData
+        };
+        
+        fetch(fullUrl, options)
+            .then(response => {
+                return response.json();
+            })
+            .then(data => {
+                callBack(data);
+            })
+            .catch(error => {
+                console.log(url, 'PUT', error);
+            });
     }
 
     set csrf(csrfToken) {

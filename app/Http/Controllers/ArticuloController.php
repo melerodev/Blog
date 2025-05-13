@@ -40,10 +40,29 @@ class ArticuloController extends Controller {
         }
     }
 
-    public function edit(Request $request, Articulo $articulo)
+    public function update(Request $request, $id)
     {
-        $articulo->update($request->all());
-        return response()->json(['message' => 'Artículo actualizado correctamente', 'result' => true]);
+        try {
+            $validated = $request->validate([
+                'titulo' => 'required|string|max:255',
+                'contenido' => 'required|string',
+                'user' => 'required|integer',
+            ]);
+            
+            $articulo = Articulo::find($id)->update($validated);
+            
+            return response()->json([
+                'message' => 'Post actualizado correctamente', 
+                'result' => true,
+                'articulo' => $articulo,
+                'articulos' => Articulo::all() // Devolver la lista actualizada
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'result' => false,
+                'message' => 'Error al actualizar el post: ' . $e->getMessage(),
+            ], 422);
+        }
     }
 
     public function destroy($id)
@@ -51,12 +70,23 @@ class ArticuloController extends Controller {
         try {
             $articulo = Articulo::find($id);
 
+            if (!$articulo) {
+                return response()->json([
+                    'message' => 'Post no encontrado',
+                    'result' => false
+                ], 404);
+            }
+
             $articulo->delete();
 
-            return response()->json(['articulos' => Articulo::all(), 'result' => true]);
+            return response()->json([
+                'message' => 'Post eliminado correctamente',
+                'result' => true,
+                'articulos' => Articulo::all()
+            ]);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Error al eliminar el artículo: ' . $e->getMessage(),
+                'message' => 'Error al eliminar el post: ' . $e->getMessage(),
                 'result' => false
             ]);
         }

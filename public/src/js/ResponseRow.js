@@ -13,6 +13,7 @@ export default class ResponseRow {
         // Crear el contenedor principal para el post
         const postPreview = document.createElement('div');
         postPreview.classList.add('post-preview');
+        postPreview.dataset.postId = id; // Añadir identificador al contenedor
 
         // Crear el enlace y cabeceras del post
         const postLink = document.createElement('a');
@@ -39,9 +40,25 @@ export default class ResponseRow {
         const postMeta = document.createElement('p');
         postMeta.classList.add('post-meta');
 
+        // Contenedor de botones
+        const buttonContainer = document.createElement('div');
+        buttonContainer.classList.add('d-flex', 'gap-2', 'mb-2');
+
+        // Crear botón de ver que abrirá el modal
+        const viewButton = document.createElement('button');
+        viewButton.classList.add('btn', 'btn-info', 'btn-sm');
+        viewButton.dataset.bsToggle = 'modal';
+        viewButton.dataset.bsTarget = '#viewPostModal';
+        viewButton.dataset.id = id;
+        viewButton.dataset.title = title;
+        viewButton.dataset.content = content;
+        viewButton.dataset.url = "/post/" + id;
+        viewButton.dataset.method = "get";
+        viewButton.textContent = 'View';
+
         // Crear botón de eliminar que abrirá el modal
         const deleteButton = document.createElement('button');
-        deleteButton.classList.add('btn', 'btn-danger', 'btn-sm', 'mt-2');
+        deleteButton.classList.add('btn', 'btn-danger', 'btn-sm');
         deleteButton.dataset.bsToggle = 'modal';
         deleteButton.dataset.bsTarget = '#deletePostModal';
         deleteButton.dataset.id = id;
@@ -49,6 +66,23 @@ export default class ResponseRow {
         deleteButton.dataset.url = "/post/" + id;
         deleteButton.dataset.method = "delete";
         deleteButton.textContent = 'Delete';
+        
+        // Crear botón de editar que abrirá el modal
+        const editButton = document.createElement('button');
+        editButton.classList.add('btn', 'btn-primary', 'btn-sm');
+        editButton.dataset.bsToggle = 'modal';
+        editButton.dataset.bsTarget = '#editPostModal';
+        editButton.dataset.id = id;
+        editButton.dataset.title = title;
+        editButton.dataset.content = content;
+        editButton.dataset.url = "/post/" + id;
+        editButton.dataset.method = "put";
+        editButton.textContent = 'Edit';
+        
+        // Añadir botones al contenedor
+        buttonContainer.appendChild(viewButton);
+        buttonContainer.appendChild(editButton);
+        buttonContainer.appendChild(deleteButton);
 
         // Formatear fecha
         const postDate = new Date(created_at);
@@ -73,7 +107,7 @@ export default class ResponseRow {
         postMeta.appendChild(hr);
 
         // Ensamblar todo el elemento del post
-        postPreview.appendChild(deleteButton);
+        postPreview.appendChild(buttonContainer);
         postPreview.appendChild(postLink);
         postPreview.appendChild(postMeta);
 

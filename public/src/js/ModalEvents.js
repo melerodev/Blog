@@ -27,17 +27,23 @@ export default class ModalEvents {
         this.modalWarningPost = document.getElementById('warningPostModal');
         this.modalWarningPostContent = document.querySelector('#warningPostModal .modal-body p');
 
+        // Success post modal
+        this.modalSuccessPost = document.getElementById('successPostModal');
+        this.modalSuccessPostContent = document.querySelector('#successPostModal #success-message');
+
         // View post modal
         this.modalViewPost = document.getElementById('viewPostModal');
         this.modalViewPostTitle = document.getElementById('post-title-view');
         this.modalViewPostContent = document.getElementById('post-content-view');
-        this.assignEvents();
 
-        // Modal post edit
+        // Edit post modal
         this.modalEditPost = document.getElementById('editPostModal');
         this.modalEditPostTitle = document.getElementById('post-title-edit');
-        this.modalEditPostContent = document.getElementById('mytextarea-edit');
+        this.modalEditPostContent = document.getElementById('mytextarea');
         this.modalEditPostButton = document.getElementById('modalEditPostButton');
+        this.modalEditPostId = document.getElementById('post-id');
+        
+        this.assignEvents();
     }
 
     assignEvents() {
@@ -45,6 +51,10 @@ export default class ModalEvents {
             this.fetchUrl = this.modalCreatePost.dataset.url;
             this.modalCreatePostTitle.value = '';
             this.modalCreatePostContent.value = '';
+            // Asegúrate de que TinyMCE esté inicializado y limpio
+            if (tinymce.get('mytextarea')) {
+                tinymce.get('mytextarea').setContent('');
+            }
         });
 
         this.modalCreatePostButton.addEventListener('click', event => {
@@ -83,6 +93,64 @@ export default class ModalEvents {
                 data => this.responseDelete(data)
             );
         });
+
+        // Listener para mostrar el modal de edición
+        this.modalEditPost.addEventListener('show.bs.modal', event => {
+            // Obtener información del botón que abrió el modal
+            const button = event.relatedTarget;
+            this.fetchUrl = button.dataset.url;
+            
+            // Llenar el formulario con los datos del post
+            this.modalEditPostId.value = button.dataset.id;
+            this.modalEditPostTitle.value = button.dataset.title;
+            
+            // Cargar el contenido del post en el editor TinyMCE
+            const content = button.dataset.content;
+            
+            // Esperar a que el modal esté completamente visible antes de inicializar TinyMCE
+            setTimeout(() => {
+                if (tinymce.get('mytextarea-edit')) {
+                    tinymce.get('mytextarea-edit').setContent(content);
+                } else {
+                    // Si el editor no está inicializado, inicializarlo
+                    tinymce.init({
+                        selector: '#mytextarea-edit',
+                        setup: function(editor) {
+                            editor.on('init', function() {
+                                editor.setContent(content);
+                            });
+                        }
+                    });
+                }
+            }, 300);
+        });
+
+        // Listener para el botón de confirmación de edición
+        this.modalEditPostButton.addEventListener('click', () => {
+            const formData = new FormData();
+            
+            formData.append('id', this.modalEditPostId.value);
+            formData.append('titulo', this.modalEditPostTitle.value);
+            formData.append('contenido', tinymce.get('mytextarea-edit') ? tinymce.get('mytextarea-edit').getContent() : '');
+            formData.append('user', 1);
+
+            this.httpClient.put(
+                this.fetchUrl,
+                Object.fromEntries(formData),
+                data => this.responseEdit(data)
+            );
+        });
+
+        // Listener para mostrar el modal de visualización
+        this.modalViewPost.addEventListener('show.bs.modal', event => {
+            // Obtener información del botón que abrió el modal
+            const button = event.relatedTarget;
+            this.fetchUrl = button.dataset.url;
+            
+            // Llenar el modal con los datos del post
+            this.modalViewPostTitle.textContent = button.dataset.title;
+            this.modalViewPostContent.innerHTML = button.dataset.content;
+        });
     }
 
     formattedDate(date) {
@@ -104,21 +172,35 @@ export default class ModalEvents {
         }
     }
 
+    showSuccessModal(message) {
+        this.modalSuccessPostContent.textContent = message;
+        const modal = new bootstrap.Modal(this.modalSuccessPost);
+        modal.show();
+    }
+
+    showWarningModal(message) {
+        this.modalWarningPostContent.textContent = message;
+        const modal = new bootstrap.Modal(this.modalWarningPost);
+        modal.show();
+    }
+
     responseCreate(data) {
         console.log('responseCreate', data);
         if (data.result) {
-            alert(data.message);
-
             // Cerrar el modal después de crear el post
             const modal = bootstrap.Modal.getInstance(this.modalCreatePost);
             if (modal) {
                 modal.hide();
             }
 
+            // Mostrar el mensaje de éxito en el modal de éxito
+            this.showSuccessModal(data.message || "Post creado exitosamente");
+
             // Actualiza el contenido con los nuevos datos
             this.responseCommonContent(data);
         } else {
-            alert("Error al crear el post: " + (data.message || "Error desconocido"));
+            // Mostrar el mensaje de error en el modal de warning
+            this.showWarningModal("Error al crear el post: " + (data.message || "Error desconocido"));
         }
     }
 
@@ -131,33 +213,49 @@ export default class ModalEvents {
                 modal.hide();
             }
             
-            alert(data.message);
+            // Mostrar el mensaje de éxito en el modal de éxito
+            this.showSuccessModal(data.message || "Post eliminado exitosamente");
+            
+            // Actualiza el contenido con los nuevos datos
             this.responseCommonContent(data);
         } else {
-            // Mostrar mensaje de error dentro del modal
-            const modalBody = this.modalDeletePost.querySelector('.modal-body');
-            modalBody.innerHTML += `<div class="alert alert-danger mt-3">Error: ${data.message || 'No se pudo eliminar el post'}</div>`;
+            // Cerrar el modal de eliminación
+            const modal = bootstrap.Modal.getInstance(this.modalDeletePost);
+            if (modal) {
+                modal.hide();
+            }
+            
+            // Mostrar el mensaje de error en el modal de warning
+            this.showWarningModal(data.message || "Error al eliminar el post");
         }
     }
 
     responseEdit(data) {
         if (data.result) {
-            this.productSuccess.style.display = 'block';
-            bootstrap.Modal.getInstance(this.modalEdit).hide();
+            // Cerrar el modal de edición
+            const modal = bootstrap.Modal.getInstance(this.modalEditPost);
+            if (modal) {
+                modal.hide();
+            }
+            
+            // Mostrºar mensaje de éxito
+            this.showSuccessModal(data.message || "Post actualizado exitosamente");
+            
+            // Actualizar la lista de posts
             this.responseCommonContent(data);
-            setTimeout(() => {
-                this.productSuccess.style.display = 'none';
-            }, 4000);
         } else {
-            document.getElementById('modalEditWarning').style.display = 'block';
-            console.log('Error en la edición del post');
+            // Mostrar mensaje de error
+            this.showWarningModal(data.message || "Error al actualizar el post");
         }
     }
 
     responseShow(data) {
         const { titulo, contenido } = data.post;
-        this.titulo.value = titulo;
-        this.contenido.value = contenido;
+        this.modalViewPostTitle.textContent = titulo;
+        this.modalViewPostContent.innerHTML = contenido;
+        
+        const modal = new bootstrap.Modal(this.modalViewPost);
+        modal.show();
     }
 
     init() {
