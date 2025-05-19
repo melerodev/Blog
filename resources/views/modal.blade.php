@@ -1,5 +1,6 @@
 <!-- Modal Create Post -->
-<div data-url="/post" data-method="create" class="modal fade" id="createPostModal" tabindex="-1" aria-labelledby="createPostModalLabel" aria-hidden="true">
+<div data-url="/post" data-method="create" class="modal fade" id="createPostModal" tabindex="-1"
+    aria-labelledby="createPostModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -27,7 +28,8 @@
 </div>
 
 <!-- Modal Delete Post -->
-<div data-url="/post" data-method="delete" class="modal fade" id="deletePostModal" tabindex="-1" aria-labelledby="deletePostModalLabel" aria-hidden="true">
+<div data-url="/post" data-method="delete" class="modal fade" id="deletePostModal" tabindex="-1"
+    aria-labelledby="deletePostModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -46,7 +48,8 @@
 </div>
 
 <!-- Modal Edit Post -->
-<div data-url="/post" data-method="update" class="modal fade" id="editPostModal" tabindex="-1" aria-labelledby="createPostModalLabel" aria-hidden="true">
+<div data-url="/post" data-method="update" class="modal fade" id="editPostModal" tabindex="-1"
+    aria-labelledby="createPostModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -75,7 +78,8 @@
 </div>
 
 <!-- Modal warning Post -->
-<div data-url="/post" data-method="warning" class="modal fade" id="warningPostModal" tabindex="-1" aria-labelledby="warningPostModalLabel" aria-hidden="true">
+<div data-url="/post" data-method="warning" class="modal fade" id="warningPostModal" tabindex="-1"
+    aria-labelledby="warningPostModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -94,7 +98,8 @@
 </div>
 
 <!-- Modal View Post -->
-<div data-url="/post" data-method="view" class="modal fade" id="viewPostModal" tabindex="-1" aria-labelledby="viewPostModalLabel" aria-hidden="true">
+<div data-url="/post" data-method="view" class="modal fade" id="viewPostModal" tabindex="-1"
+    aria-labelledby="viewPostModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -104,6 +109,24 @@
             <div class="modal-body">
                 <h5 id="post-title-view"></h5>
                 <p id="post-content-view"></p>
+
+                <!-- Contenedor de comentarios -->
+                <div id="comments-container" class="mt-3">
+                    <!-- Formulario para añadir comentarios -->
+                    <div id="createCommentModal" data-url="/comment" data-method="create">
+                        <div class="mb-3">
+                            <label for="comment-content" class="form-label">Añadir un comentario</label>
+                            <textarea id="comment-content" class="form-control" rows="3" required></textarea>
+                            <input type="hidden" id="comment-post-id" name="articulo">
+                        </div>
+                        <button id="modalAddCommentButton" class="btn btn-primary">Enviar</button>
+                    </div>
+                    
+                    <h5>Comentarios</h5>
+                    <ul id="comments-list" class="list-group">
+                        <!-- Los comentarios se cargarán aquí dinámicamente -->
+                    </ul>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

@@ -36,13 +36,18 @@ export default class ModalEvents {
         this.modalViewPostTitle = document.getElementById('post-title-view');
         this.modalViewPostContent = document.getElementById('post-content-view');
 
+        this.modalAddComment = document.getElementById('createCommentModal');
+        this.modalAddCommentContent = document.getElementById('comment-content');
+        this.modalAddCommentButton = document.getElementById('modalAddCommentButton');
+        this.modalAddCommentId = document.getElementById('post-id');
+
         // Edit post modal
         this.modalEditPost = document.getElementById('editPostModal');
         this.modalEditPostTitle = document.getElementById('post-title-edit');
         this.modalEditPostContent = document.getElementById('mytextarea');
         this.modalEditPostButton = document.getElementById('modalEditPostButton');
         this.modalEditPostId = document.getElementById('post-id');
-        
+
         this.assignEvents();
     }
 
@@ -59,10 +64,10 @@ export default class ModalEvents {
 
         this.modalCreatePostButton.addEventListener('click', event => {
             const formData = new FormData();
-            
+
             // Usar la API de TinyMCE para obtener el contenido del editor
             const contenido = tinymce.get('mytextarea') ? tinymce.get('mytextarea').getContent() : '';
-            
+
             formData.append('titulo', this.modalCreatePostTitle.value);
             formData.append('contenido', contenido);
             formData.append('user', 1);
@@ -79,7 +84,7 @@ export default class ModalEvents {
             // Obtener información del botón que abrió el modal
             const button = event.relatedTarget;
             this.fetchUrl = button.dataset.url;
-            
+
             // Mostrar el título del post en el modal para confirmar
             const modalBody = this.modalDeletePost.querySelector('.modal-body');
             modalBody.innerHTML = `<p>¿Estás seguro que deseas eliminar el post "<strong>${button.dataset.title}</strong>"?</p>`;
@@ -99,14 +104,14 @@ export default class ModalEvents {
             // Obtener información del botón que abrió el modal
             const button = event.relatedTarget;
             this.fetchUrl = button.dataset.url;
-            
+
             // Llenar el formulario con los datos del post
             this.modalEditPostId.value = button.dataset.id;
             this.modalEditPostTitle.value = button.dataset.title;
-            
+
             // Cargar el contenido del post en el editor TinyMCE
             const content = button.dataset.content;
-            
+
             // Esperar a que el modal esté completamente visible antes de inicializar TinyMCE
             setTimeout(() => {
                 if (tinymce.get('mytextarea-edit')) {
@@ -115,8 +120,8 @@ export default class ModalEvents {
                     // Si el editor no está inicializado, inicializarlo
                     tinymce.init({
                         selector: '#mytextarea-edit',
-                        setup: function(editor) {
-                            editor.on('init', function() {
+                        setup: function (editor) {
+                            editor.on('init', function () {
                                 editor.setContent(content);
                             });
                         }
@@ -128,7 +133,7 @@ export default class ModalEvents {
         // Listener para el botón de confirmación de edición
         this.modalEditPostButton.addEventListener('click', () => {
             const formData = new FormData();
-            
+
             formData.append('id', this.modalEditPostId.value);
             formData.append('titulo', this.modalEditPostTitle.value);
             formData.append('contenido', tinymce.get('mytextarea-edit') ? tinymce.get('mytextarea-edit').getContent() : '');
@@ -146,10 +151,48 @@ export default class ModalEvents {
             // Obtener información del botón que abrió el modal
             const button = event.relatedTarget;
             this.fetchUrl = button.dataset.url;
-            
+
             // Llenar el modal con los datos del post
             this.modalViewPostTitle.textContent = button.dataset.title;
             this.modalViewPostContent.innerHTML = button.dataset.content;
+        });
+
+        // Listener para mostrar el modal de agregar comentario
+        this.modalAddCommentButton.addEventListener('click', event => {
+            const formData = new FormData();
+            formData.append('texto', this.modalAddCommentContent.value);
+            // Obtener el ID del artículo de la URL actual de visualización
+            const articuloId = this.fetchUrl.split('/').pop();
+            formData.append('articulo', articuloId);
+            formData.append('user', 1);
+
+            // Configurar correctamente la URL de fetch antes de enviar el formulario
+            // Usar solo la URL base sin añadir el ID del artículo
+            const commentUrl = this.modalAddComment.dataset.url;
+
+            this.httpClient.postFormData(
+                commentUrl,
+                formData,
+                data => {
+                    console.log(data);
+                    if (data.result) {
+                        // Cerrar el modal después de agregar el comentario
+                        const modal = bootstrap.Modal.getInstance(this.modalAddComment);
+                        if (modal) {
+                            modal.hide();
+                        }
+
+                        // Mostrar el mensaje de éxito en el modal de éxito
+                        this.showSuccessModal(data.message || "Comentario agregado exitosamente");
+
+                        // Actualiza el contenido con los nuevos datos
+                        this.responseCommonContent(data);
+                    } else {
+                        // Mostrar el mensaje de error en el modal de warning
+                        this.showWarningModal("Error al agregar el comentario: " + (data.message || "Error desconocido"));
+                    }
+                }
+            );
         });
     }
 
@@ -212,10 +255,10 @@ export default class ModalEvents {
             if (modal) {
                 modal.hide();
             }
-            
+
             // Mostrar el mensaje de éxito en el modal de éxito
             this.showSuccessModal(data.message || "Post eliminado exitosamente");
-            
+
             // Actualiza el contenido con los nuevos datos
             this.responseCommonContent(data);
         } else {
@@ -224,7 +267,7 @@ export default class ModalEvents {
             if (modal) {
                 modal.hide();
             }
-            
+
             // Mostrar el mensaje de error en el modal de warning
             this.showWarningModal(data.message || "Error al eliminar el post");
         }
@@ -237,10 +280,10 @@ export default class ModalEvents {
             if (modal) {
                 modal.hide();
             }
-            
+
             // Mostrºar mensaje de éxito
             this.showSuccessModal(data.message || "Post actualizado exitosamente");
-            
+
             // Actualizar la lista de posts
             this.responseCommonContent(data);
         } else {
@@ -253,7 +296,7 @@ export default class ModalEvents {
         const { titulo, contenido } = data.post;
         this.modalViewPostTitle.textContent = titulo;
         this.modalViewPostContent.innerHTML = contenido;
-        
+
         const modal = new bootstrap.Modal(this.modalViewPost);
         modal.show();
     }
