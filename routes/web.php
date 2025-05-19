@@ -10,3 +10,5 @@ Route::get('/', function () {
 
 Route::resource('post', controller: ArticuloController::class);
 Route::resource('comment', controller: ComentarioController::class);
+// Ruta específica para obtener comentarios por ID de artículo
+Route::get('comment/article/{articuloId}', [ComentarioController::class, 'index']);

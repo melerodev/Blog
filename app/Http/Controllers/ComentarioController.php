@@ -58,8 +58,34 @@ class ComentarioController extends Controller
         }
     }
 
-    public function index($articuloId) {
-        $comentarios = Comentario::where('articulo_id', $articuloId)->get();
-        return response()->json($comentarios);
+    public function index($articuloId = null) {
+        try {
+            // Si recibimos un ID de artículo específico
+            if ($articuloId !== null) {
+                $comentarios = Comentario::where('articulo', $articuloId)->get();
+                return response()->json($comentarios);
+            }
+            
+            // Si no hay ID, devolver todos los comentarios
+            $comentarios = Comentario::all();
+            return response()->json($comentarios);
+        } catch (\Exception $e) {
+            return response()->json([
+                'result' => false,
+                'error' => 'Error al cargar comentarios: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function show($id) {
+        try {
+            $comentario = Comentario::findOrFail($id);
+            return response()->json($comentario);
+        } catch (\Exception $e) {
+            return response()->json([
+                'result' => false,
+                'error' => 'Comentario no encontrado'
+            ], 404);
+        }
     }
 }

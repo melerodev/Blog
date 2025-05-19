@@ -156,6 +156,17 @@ export default class ModalEvents {
             // Llenar el modal con los datos del post
             this.modalViewPostTitle.textContent = button.dataset.title;
             this.modalViewPostContent.innerHTML = button.dataset.content;
+            
+            // Obtener el ID del artículo para cargar sus comentarios
+            const articuloId = this.fetchUrl.split('/').pop();
+            
+            // Limpiar la lista de comentarios existente
+            if (this.commentsList) {
+                this.commentsList.innerHTML = '';
+            }
+            
+            // Cargar los comentarios del post
+            this.loadPostComments(articuloId);
         });
 
         // Listener para mostrar el modal de agregar comentario
@@ -278,6 +289,40 @@ export default class ModalEvents {
                 }
             );
         }
+    }
+
+    // Método para cargar los comentarios de un post
+    loadPostComments(postId) {
+        if (!postId) return;
+        
+        // Usar la ruta específica para obtener comentarios de un artículo
+        const commentsUrl = `/comment/article/${postId}`;
+        
+        this.httpClient.get(
+            commentsUrl,
+            {},
+            data => {
+                console.log('Comentarios cargados:', data);
+                
+                // Si hay comentarios, los agregamos a la lista
+                if (Array.isArray(data)) {
+                    // Ordenamos los comentarios del más reciente al más antiguo
+                    const sortedComments = data.sort((a, b) => {
+                        return new Date(b.created_at || b.fecha) - new Date(a.created_at || a.fecha);
+                    });
+                    
+                    // Añadimos cada comentario a la lista
+                    sortedComments.forEach(comment => {
+                        this.addCommentToList({
+                            id: comment.id,
+                            texto: comment.texto,
+                            usuario: comment.usuario || 'Usuario ' + comment.user,
+                            fecha: comment.created_at || comment.fecha
+                        });
+                    });
+                }
+            }
+        );
     }
 
     formattedDate(date) {
