@@ -39,9 +39,22 @@ class ComentarioController extends Controller
     public function destroy($id) {
         try {
             $comentario = Comentario::findOrFail($id);
-            return response()->json($comentario->delete());
+            $result = $comentario->delete();
+            
+            return response()->json([
+                'result' => $result,
+                'message' => 'Comentario eliminado correctamente'
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'result' => false,
+                'error' => 'El comentario no existe o ya ha sido eliminado'
+            ], 404);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Comentario no encontrado'], 404);
+            return response()->json([
+                'result' => false,
+                'error' => 'Error al eliminar el comentario: ' . $e->getMessage()
+            ], 500);
         }
     }
 

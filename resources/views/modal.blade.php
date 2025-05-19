@@ -124,7 +124,6 @@
                     
                     <h5>Comentarios</h5>
                     <ul id="comments-list" class="list-group">
-                        <!-- Los comentarios se cargarán aquí dinámicamente -->
                     </ul>
                 </div>
             </div>

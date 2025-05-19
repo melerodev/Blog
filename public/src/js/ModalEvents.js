@@ -40,6 +40,7 @@ export default class ModalEvents {
         this.modalAddCommentContent = document.getElementById('comment-content');
         this.modalAddCommentButton = document.getElementById('modalAddCommentButton');
         this.modalAddCommentId = document.getElementById('post-id');
+        this.commentsList = document.getElementById('comments-list');
 
         // Edit post modal
         this.modalEditPost = document.getElementById('editPostModal');
@@ -176,17 +177,33 @@ export default class ModalEvents {
                 data => {
                     console.log(data);
                     if (data.result) {
+                        // Capturar el contenido del comentario antes de limpiar el campo
+                        const commentText = this.modalAddCommentContent.value;
+                        
                         // Cerrar el modal después de agregar el comentario
                         const modal = bootstrap.Modal.getInstance(this.modalAddComment);
                         if (modal) {
                             modal.hide();
                         }
 
+                        // Limpiar el campo de comentario
+                        this.modalAddCommentContent.value = '';
+                        
+                        // Usar data.comentario en lugar de data.comment (coincide con la respuesta del backend)
+                        this.addCommentToList(data.comentario || {
+                            id: new Date().getTime(), // ID temporal si no viene del servidor
+                            texto: commentText,
+                            usuario: 'Usuario actual', // Usar nombre de usuario actual si está disponible
+                            fecha: new Date().toISOString()
+                        });
+
                         // Mostrar el mensaje de éxito en el modal de éxito
                         this.showSuccessModal(data.message || "Comentario agregado exitosamente");
 
-                        // Actualiza el contenido con los nuevos datos
-                        this.responseCommonContent(data);
+                        // Actualiza el contenido con los nuevos datos si es necesario
+                        if (data.content) {
+                            this.responseCommonContent(data);
+                        }
                     } else {
                         // Mostrar el mensaje de error en el modal de warning
                         this.showWarningModal("Error al agregar el comentario: " + (data.message || "Error desconocido"));
@@ -194,6 +211,73 @@ export default class ModalEvents {
                 }
             );
         });
+    }
+
+    addCommentToList(comment) {
+        // Crear nuevo elemento de lista para el comentario
+        const commentItem = document.createElement('li');
+        commentItem.className = 'list-group-item';
+        commentItem.dataset.commentId = comment.id;
+        
+        // Formatear la fecha si existe
+        let formattedDate = '';
+        if (comment.fecha) {
+            formattedDate = this.formattedDate(comment.fecha);
+        }
+        
+        // Crear el contenido del comentario
+        commentItem.innerHTML = `
+            <strong>${comment.usuario || 'Usuario'}:</strong> 
+            <span class="comment-text">${comment.texto}</span>
+            ${formattedDate ? `<small class="text-muted ms-2">${formattedDate}</small>` : ''}
+            <button class="btn btn-danger btn-sm float-end comment-delete" data-id="${comment.id}">Eliminar</button>
+        `;
+        
+        // Añadir el comentario al inicio de la lista para mostrarlo primero
+        if (this.commentsList) {
+            this.commentsList.prepend(commentItem);
+        }
+        
+        // Añadir evento para eliminar comentario
+        const deleteBtn = commentItem.querySelector('.comment-delete');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', () => {
+                const commentId = deleteBtn.dataset.id || commentItem.dataset.commentId;
+                if (commentId) {
+                    this.deleteComment(commentId, commentItem);
+                } else {
+                    commentItem.remove(); // Elimina visualmente si no hay ID
+                }
+            });
+        }
+    }
+
+    // Método para eliminar un comentario
+    deleteComment(commentId, commentElement) {
+        if (!commentId) return;
+
+        // URL para eliminar comentario
+        const deleteUrl = `/comment/${commentId}`;
+
+        // Confirmar antes de eliminar
+        if (confirm('¿Estás seguro que deseas eliminar este comentario?')) {
+            this.httpClient.delete(
+                deleteUrl,
+                {},
+                data => {
+                    console.log('Respuesta al eliminar comentario:', data);
+                    if (data === 1 || data === true || data.result === true) {
+                        // Eliminar visualmente el comentario si la eliminación fue exitosa
+                        commentElement.remove();
+                        this.showSuccessModal('Comentario eliminado exitosamente');
+                    } else {
+                        // Mejorar el manejo de errores
+                        const errorMsg = data.error || 'No se pudo eliminar el comentario. Podría haber sido eliminado previamente o no existir.';
+                        this.showWarningModal(errorMsg);
+                    }
+                }
+            );
+        }
     }
 
     formattedDate(date) {
