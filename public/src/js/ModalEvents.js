@@ -238,7 +238,7 @@ export default class ModalEvents {
         
         // Crear el contenido del comentario
         commentItem.innerHTML = `
-            <strong>${comment.usuario || 'Usuario'}:</strong> 
+            <strong>${'Usuario'}:</strong> 
             <span class="comment-text">${comment.texto}</span>
             ${formattedDate ? `<small class="text-muted ms-2">${formattedDate}</small>` : ''}
             <button class="btn btn-danger btn-sm float-end comment-delete" data-id="${comment.id}">Eliminar</button>
@@ -316,7 +316,7 @@ export default class ModalEvents {
                         this.addCommentToList({
                             id: comment.id,
                             texto: comment.texto,
-                            usuario: comment.usuario || 'Usuario ' + comment.user,
+                            usuario: 'Usuario ',
                             fecha: comment.created_at || comment.fecha
                         });
                     });
